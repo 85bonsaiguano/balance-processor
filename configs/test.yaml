@@ -1,0 +1,38 @@
+server:
+  host: "0.0.0.0"  # Can be overridden by BP_SERVER_HOST
+  port: 8081       # Can be overridden by BP_SERVER_PORT
+  readTimeout: 5     # seconds
+  writeTimeout: 5    # seconds
+  idleTimeout: 60    # seconds
+  readHeaderTimeout: 5  # seconds
+  shutdownTimeout: 5    # seconds
+
+database:
+  driver: "postgres"
+  # These sensitive values should be provided through environment variables
+  host: ""         # Set via BP_DB_HOST
+  port: ""         # Set via BP_DB_PORT
+  username: ""     # Set via BP_DB_USERNAME
+  password: ""     # Set via BP_DB_PASSWORD
+  database: ""     # Set via BP_DB_NAME
+  sslMode: "disable"  # Can be overridden by BP_DB_SSL_MODE
+  maxOpenConns: 10
+  maxIdleConns: 5
+  connMaxLifetime: 5    # minutes
+  connMaxIdleTime: 2    # minutes
+  queryTimeout: 5       # seconds
+  retryAttempts: 2      # Number of retry attempts for database operations
+  retryDelay: 1         # Delay between retries in seconds
+
+logger:
+  level: "debug"    # Can be overridden by BP_LOGGER_LEVEL
+  format: "json"
+  output: "stdout"
+  timeFormat: "2006-01-02T15:04:05.000Z07:00"
+  callerInfo: true
+
+transaction:
+  concurrencyLevel: 10     # Can be overridden by BP_TRANSACTION_CONCURRENCY_LEVEL
+  lockTimeoutMs: 5000      # Can be overridden by BP_TRANSACTION_LOCK_TIMEOUT_MS
+  maxRetries: 2            # Maximum number of retries for failed transactions
+  userBalanceDecimalPlaces: 2  # Decimal places for user balance 
