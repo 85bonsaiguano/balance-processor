@@ -109,7 +109,17 @@ func NewTransaction(
 func (t *Transaction) MarkAsProcessed(timeProvider tport.TimeProvider, resultBalance string) {
 	now := timeProvider.Now()
 	t.ProcessedAt = &now
-	t.ResultBalance = EnsureTwoDecimalPlaces(resultBalance)
+
+	// Format the result balance, ignoring potential error since we only care about the formatted string
+	// If there's an error, the input value wasn't properly formatted, so we'll use it as is
+	formattedBalance, err := EnsureTwoDecimalPlaces(resultBalance)
+	if err == nil {
+		t.ResultBalance = formattedBalance
+	} else {
+		// Fall back to the original value if we can't format it properly
+		t.ResultBalance = resultBalance
+	}
+
 	t.Status = StatusCompleted
 }
 
