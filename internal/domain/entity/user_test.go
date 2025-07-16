@@ -80,9 +80,9 @@ func TestUserSetBalance(t *testing.T) {
 }
 
 func TestUserIncrementTransactionCount(t *testing.T) {
-	nowTime := time.Now()
+	fixedTime := time.Date(2023, 1, 1, 12, 0, 0, 0, time.UTC)
 	mockTime := coremocks.NewMockTimeProvider(t)
-	mockTime.EXPECT().Now().Return(nowTime).Maybe()
+	mockTime.EXPECT().Now().Return(fixedTime).Maybe()
 
 	user, _ := NewUser(1, "100.00", mockTime)
 
@@ -96,8 +96,9 @@ func TestUserIncrementTransactionCount(t *testing.T) {
 }
 
 func TestUserCanDeduct(t *testing.T) {
+	fixedTime := time.Date(2023, 1, 1, 12, 0, 0, 0, time.UTC)
 	mockTime := coremocks.NewMockTimeProvider(t)
-	mockTime.EXPECT().Now().Return(time.Now()).Maybe()
+	mockTime.EXPECT().Now().Return(fixedTime).Maybe()
 
 	user, _ := NewUser(1, "100.00", mockTime)
 
@@ -215,9 +216,9 @@ func TestApplyLoseTransaction(t *testing.T) {
 }
 
 func TestIntegrationOfTransactions(t *testing.T) {
-	nowTime := time.Now()
+	fixedTime := time.Date(2023, 1, 1, 12, 0, 0, 0, time.UTC)
 	mockTime := coremocks.NewMockTimeProvider(t)
-	mockTime.EXPECT().Now().Return(nowTime).Maybe()
+	mockTime.EXPECT().Now().Return(fixedTime).Maybe()
 
 	user, _ := NewUser(1, "100.00", mockTime)
 

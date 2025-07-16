@@ -5,14 +5,15 @@ import (
 	"errors"
 	"fmt"
 
+	"gorm.io/gorm"
+
 	"github.com/amirhossein-jamali/balance-processor/internal/domain/entity"
 	errs "github.com/amirhossein-jamali/balance-processor/internal/domain/error"
 	coreport "github.com/amirhossein-jamali/balance-processor/internal/domain/port/core"
 	"github.com/amirhossein-jamali/balance-processor/internal/infrastructure/adapter/model"
-	"gorm.io/gorm"
 )
 
-// TransactionRepository implements TransactionRepository interface using GORM
+// TransactionRepository implements persistence.TransactionRepository interface
 type TransactionRepository struct {
 	db              *gorm.DB
 	logger          coreport.Logger
@@ -35,11 +36,11 @@ func (r *TransactionRepository) entityToModel(transaction *entity.Transaction) m
 		TransactionID: transaction.TransactionID,
 		SourceType:    string(transaction.SourceType),
 		State:         string(transaction.State),
-		Amount:        transaction.Amount,
+		Amount:        transaction.GetAmount(),
 		AmountInCents: transaction.AmountInCents,
 		CreatedAt:     transaction.CreatedAt,
 		ProcessedAt:   transaction.ProcessedAt,
-		ResultBalance: transaction.ResultBalance,
+		ResultBalance: transaction.GetResultBalance(),
 		Status:        string(transaction.Status),
 		ErrorMessage:  transaction.ErrorMessage,
 	}
@@ -161,19 +162,30 @@ func (r *TransactionRepository) TransactionExists(ctx context.Context, transacti
 
 // modelToEntity converts a transaction model to an entity
 func (r *TransactionRepository) modelToEntity(model *model.Transaction) *entity.Transaction {
+	// Create a basic transaction with required fields
+	sourceType := entity.SourceType(model.SourceType)
+	state := entity.TransactionState(model.State)
+	status := entity.TransactionStatus(model.Status)
+
+	// Initialize a transaction struct directly since we're mapping from DB
 	transaction := &entity.Transaction{
-		ID:            model.ID,
-		UserID:        model.UserID,
-		TransactionID: model.TransactionID,
-		SourceType:    entity.SourceType(model.SourceType),
-		State:         entity.TransactionState(model.State),
-		Amount:        model.Amount,
-		AmountInCents: model.AmountInCents,
-		CreatedAt:     model.CreatedAt,
-		ProcessedAt:   model.ProcessedAt,
-		ResultBalance: model.ResultBalance,
-		Status:        entity.TransactionStatus(model.Status),
-		ErrorMessage:  model.ErrorMessage,
+		ID:                   model.ID,
+		UserID:               model.UserID,
+		TransactionID:        model.TransactionID,
+		SourceType:           sourceType,
+		State:                state,
+		AmountInCents:        model.AmountInCents,
+		CreatedAt:            model.CreatedAt,
+		ProcessedAt:          model.ProcessedAt,
+		ResultBalanceInCents: 0, // Will parse from ResultBalance string
+		Status:               status,
+		ErrorMessage:         model.ErrorMessage,
+	}
+
+	// Parse result balance if available
+	if model.ResultBalance != "" {
+		resultBalanceInCents, _ := entity.ValidateAndConvertAmount(model.ResultBalance)
+		transaction.ResultBalanceInCents = resultBalanceInCents
 	}
 
 	return transaction

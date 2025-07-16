@@ -297,7 +297,8 @@ func (s *Service) processTransactionInternal(
 	}
 
 	// Transaction successful - mark as completed
-	txn.MarkAsProcessed(s.timeProvider, user.GetBalance())
+	balanceInCents := user.Balance()
+	txn.MarkAsProcessed(s.timeProvider, balanceInCents)
 	if err := txnRepo.Update(txCtx, txn); err != nil {
 		s.logger.Error("Failed to update transaction status", map[string]any{
 			"userId":        userID,
