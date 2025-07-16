@@ -1,9 +1,10 @@
-package entity
+package dto
 
 import (
 	"testing"
 	"time"
 
+	"github.com/amirhossein-jamali/balance-processor/internal/domain/entity"
 	coremocks "github.com/amirhossein-jamali/balance-processor/mocks/port/core"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +16,7 @@ func TestUserToBalanceResponse(t *testing.T) {
 		mockTime := coremocks.NewMockTimeProvider(t)
 		mockTime.EXPECT().Now().Return(fixedTime).Once()
 
-		user, err := NewUser(42, "123.45", mockTime)
+		user, err := entity.NewUser(42, "123.45", mockTime)
 		assert.NoError(t, err)
 
 		// Convert to balance response
@@ -31,7 +32,7 @@ func TestUserToBalanceResponse(t *testing.T) {
 		mockTime := coremocks.NewMockTimeProvider(t)
 		mockTime.EXPECT().Now().Return(nowTime).Once()
 
-		user, err := NewUser(123, "0.00", mockTime)
+		user, err := entity.NewUser(123, "0.00", mockTime)
 		assert.NoError(t, err)
 
 		response := UserToBalanceResponse(user)
@@ -45,7 +46,7 @@ func TestUserToBalanceResponse(t *testing.T) {
 		mockTime := coremocks.NewMockTimeProvider(t)
 		mockTime.EXPECT().Now().Return(nowTime).Once()
 
-		user, err := NewUser(999, "9876543.21", mockTime)
+		user, err := entity.NewUser(999, "9876543.21", mockTime)
 		assert.NoError(t, err)
 
 		response := UserToBalanceResponse(user)

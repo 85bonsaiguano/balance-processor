@@ -66,7 +66,7 @@ func (h *UserHandler) GetBalance(c *gin.Context) {
 		return
 	}
 
-	// Return success response
+	// Return success response - direct mapping from usecase response to DTO
 	c.JSON(http.StatusOK, dto.BalanceResponse{
 		UserID:  balanceResponse.UserID,
 		Balance: balanceResponse.Balance,
