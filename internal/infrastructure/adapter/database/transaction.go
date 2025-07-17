@@ -45,6 +45,8 @@ func (u *UnitOfWork) Begin(ctx context.Context) (context.Context, error) {
 	}
 
 	// Set transaction isolation level explicitly to SERIALIZABLE
+	// This ensures complete transaction isolation and prevents race conditions
+	// when calculating balances, despite the potential for more conflicts
 	if err := tx.Exec("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE").Error; err != nil {
 		tx.Rollback()
 		u.logger.Error("Failed to set transaction isolation level", map[string]any{"error": err.Error()})
