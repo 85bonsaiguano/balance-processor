@@ -44,7 +44,13 @@ func (u *User) Balance() int64 {
 
 // GetBalance returns the balance as a string with 2 decimal places
 func (u *User) GetBalance() string {
-	return EnsureTwoDecimalPlaces(AmountInCentsToString(u.balance))
+	// Convert balance to string format
+	balanceStr := AmountInCentsToString(u.balance)
+
+	// We can safely ignore error here because AmountInCentsToString always produces
+	// a valid string with exactly 2 decimal places
+	formattedBalance, _ := EnsureTwoDecimalPlaces(balanceStr)
+	return formattedBalance
 }
 
 // SetBalance updates the balance directly (for internal use, like repositories)

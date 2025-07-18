@@ -7,27 +7,28 @@ import (
 	"github.com/amirhossein-jamali/balance-processor/internal/domain/entity"
 	domainerr "github.com/amirhossein-jamali/balance-processor/internal/domain/error"
 	coreport "github.com/amirhossein-jamali/balance-processor/internal/domain/port/core"
-	"github.com/amirhossein-jamali/balance-processor/internal/domain/port/usecase"
+	transactionUseCase "github.com/amirhossein-jamali/balance-processor/internal/domain/usecase/transaction"
+	userUseCase "github.com/amirhossein-jamali/balance-processor/internal/domain/usecase/user"
 	"github.com/amirhossein-jamali/balance-processor/internal/infrastructure/adapter/api/dto"
 	"github.com/gin-gonic/gin"
 )
 
 // TransactionHandler handles transaction-related HTTP requests
 type TransactionHandler struct {
-	transactionUseCase usecase.TransactionUseCase
-	userUseCase        usecase.UserUseCase
+	transactionService *transactionUseCase.Service
+	userService        *userUseCase.UserUseCase
 	logger             coreport.Logger
 }
 
 // NewTransactionHandler creates a new transaction handler instance
 func NewTransactionHandler(
-	transactionUseCase usecase.TransactionUseCase,
-	userUseCase usecase.UserUseCase,
+	transactionService *transactionUseCase.Service,
+	userService *userUseCase.UserUseCase,
 	logger coreport.Logger,
 ) *TransactionHandler {
 	return &TransactionHandler{
-		transactionUseCase: transactionUseCase,
-		userUseCase:        userUseCase,
+		transactionService: transactionService,
+		userService:        userService,
 		logger:             logger,
 	}
 }
@@ -82,7 +83,7 @@ func (h *TransactionHandler) ProcessTransaction(c *gin.Context) {
 	}
 
 	// Check if user exists
-	exists, err := h.userUseCase.UserExists(c.Request.Context(), userID)
+	exists, err := h.userService.UserExists(c.Request.Context(), userID)
 	if err != nil {
 		h.logger.Error("Error checking user existence", map[string]any{
 			"userId": userID,
@@ -103,7 +104,7 @@ func (h *TransactionHandler) ProcessTransaction(c *gin.Context) {
 	}
 
 	// Map to domain request
-	transactionReq := usecase.TransactionRequest{
+	transactionReq := transactionUseCase.TransactionRequest{
 		State:         req.State,
 		Amount:        req.Amount,
 		TransactionID: req.TransactionID,
@@ -111,7 +112,7 @@ func (h *TransactionHandler) ProcessTransaction(c *gin.Context) {
 	}
 
 	// Process the transaction
-	result, err := h.transactionUseCase.ProcessTransaction(c.Request.Context(), userID, transactionReq)
+	result, err := h.transactionService.ProcessTransaction(c.Request.Context(), userID, transactionReq)
 
 	// Return appropriate response based on result
 	if err != nil {

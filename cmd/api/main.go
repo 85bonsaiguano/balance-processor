@@ -108,7 +108,6 @@ func main() {
 
 	transactionUseCaseImpl := transactionUseCase.NewTransactionService(
 		uow,
-		userUseCaseImpl,
 		userLockRepo,
 		tp,
 		appLogger,
@@ -173,11 +172,9 @@ func main() {
 	defer cancel()
 
 	// Shutdown TransactionManager cleanly
-	if txService, ok := transactionUseCaseImpl.(*transactionUseCase.Service); ok {
-		if txManager := txService.GetManager(); txManager != nil {
-			appLogger.Info("Shutting down transaction manager...", nil)
-			txManager.Shutdown()
-		}
+	if txManager := transactionUseCaseImpl.GetManager(); txManager != nil {
+		appLogger.Info("Shutting down transaction manager...", nil)
+		txManager.Shutdown()
 	}
 
 	// Shutdown the server

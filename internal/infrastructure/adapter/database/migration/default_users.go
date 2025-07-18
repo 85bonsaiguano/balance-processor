@@ -3,11 +3,32 @@ package migration
 import (
 	"context"
 
-	"github.com/amirhossein-jamali/balance-processor/internal/domain/port/usecase"
+	userUseCase "github.com/amirhossein-jamali/balance-processor/internal/domain/usecase/user"
 )
 
-// CreateDefaultUsers creates the default users as specified in the user use case
-func CreateDefaultUsers(ctx context.Context, userUseCase usecase.UserUseCase) error {
-	// Use the domain usecase method to create default users with predefined balances
-	return userUseCase.CreateDefaultUsers(ctx)
+// Default user IDs and balances
+var defaultUsers = map[uint64]string{
+	1: "100.00",
+	2: "200.00",
+	3: "300.00",
+}
+
+// CreateDefaultUsers creates the default users with predefined balances
+func CreateDefaultUsers(ctx context.Context, userService *userUseCase.UserUseCase) error {
+	for userID, balance := range defaultUsers {
+		// Check if user exists
+		exists, err := userService.UserExists(ctx, userID)
+		if err != nil {
+			return err
+		}
+
+		if !exists {
+			// Create user if it doesn't exist
+			if err := userService.CreateUser(ctx, userID, balance); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

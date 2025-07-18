@@ -39,15 +39,15 @@ func DefaultConfig() *Config {
 		Password:        configEnv("BP_DB_PASSWORD"),
 		Database:        configEnv("BP_DB_NAME"),
 		SSLMode:         configEnvOrDefault("BP_DB_SSL_MODE", "disable"),
-		MaxOpenConns:    configEnvAsInt("BP_DB_MAX_OPEN_CONNS", 25),
+		MaxOpenConns:    configEnvAsInt("BP_DB_MAX_OPEN_CONNS", 50),      // Increased from 25
 		MaxIdleConns:    configEnvAsInt("BP_DB_MAX_IDLE_CONNS", 25),
-		ConnMaxLifetime: time.Duration(configEnvAsInt("BP_DB_CONN_MAX_LIFETIME_MINUTES", 5)) * time.Minute,
-		ConnMaxIdleTime: time.Duration(configEnvAsInt("BP_DB_CONN_MAX_IDLE_TIME_MINUTES", 5)) * time.Minute,
+		ConnMaxLifetime: time.Duration(configEnvAsInt("BP_DB_CONN_MAX_LIFETIME_MINUTES", 15)) * time.Minute, // Increased from 5
+		ConnMaxIdleTime: time.Duration(configEnvAsInt("BP_DB_CONN_MAX_IDLE_TIME_MINUTES", 10)) * time.Minute, // Increased from 5
 		MigrationPath:   configEnvOrDefault("BP_DB_MIGRATION_PATH", "migrations"),
-		QueryTimeout:    time.Duration(configEnvAsInt("BP_DB_QUERY_TIMEOUT_SECONDS", 10)) * time.Second,
+		QueryTimeout:    time.Duration(configEnvAsInt("BP_DB_QUERY_TIMEOUT_SECONDS", 15)) * time.Second, // Increased from 10
 		LogLevel:        configEnvOrDefault("BP_LOGGER_LEVEL", "info"),
-		RetryAttempts:   configEnvAsInt("BP_DB_RETRY_ATTEMPTS", 3),
-		RetryDelay:      configEnvAsInt("BP_DB_RETRY_DELAY_SECONDS", 5),
+		RetryAttempts:   configEnvAsInt("BP_DB_RETRY_ATTEMPTS", 5),       // Increased from 3
+		RetryDelay:      configEnvAsInt("BP_DB_RETRY_DELAY_SECONDS", 2),  // Decreased from 5 for faster retries
 	}
 
 	return config

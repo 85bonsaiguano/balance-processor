@@ -118,36 +118,46 @@ func TestRoundTrip(t *testing.T) {
 }
 
 func TestEnsureTwoDecimalPlaces(t *testing.T) {
-	testCases := []struct {
-		input    string
-		expected string
-	}{
-		// Standard cases
-		{"100", "100.00"},
-		{"100.0", "100.00"},
-		{"100.1", "100.10"},
-		{"100.12", "100.12"},
+	t.Run("Valid cases", func(t *testing.T) {
+		testCases := []struct {
+			input    string
+			expected string
+		}{
+			// Standard cases
+			{"100", "100.00"},
+			{"100.0", "100.00"},
+			{"100.1", "100.10"},
+			{"100.12", "100.12"},
 
-		// Edge cases
-		{"0", "0.00"},
-		{"", "0.00"},
-		{"   ", "0.00"},
+			// Edge cases
+			{"0", "0.00"},
+			{"", "0.00"},
+			{"   ", "0.00"},
+		}
 
-		// Long decimal cases
-		{"100.123", "100.12"},
-		{"100.129", "100.12"},
+		for _, tc := range testCases {
+			t.Run(tc.input, func(t *testing.T) {
+				result, err := EnsureTwoDecimalPlaces(tc.input)
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expected, result, "Input: %s, Expected: %s, Got: %s", tc.input, tc.expected, result)
+			})
+		}
+	})
 
-		// Cases with potential rounding issues
-		{"10.15", "10.15"},
-		{"521.80", "521.80"},
-		{"531.94", "531.94"},
-		{"531.95", "531.95"},
-	}
+	t.Run("Invalid cases - Too many decimal places", func(t *testing.T) {
+		testCases := []string{
+			"100.123",
+			"100.129",
+			"531.959",
+			"10.999",
+		}
 
-	for _, tc := range testCases {
-		t.Run(tc.input, func(t *testing.T) {
-			result := EnsureTwoDecimalPlaces(tc.input)
-			assert.Equal(t, tc.expected, result, "Input: %s, Expected: %s, Got: %s", tc.input, tc.expected, result)
-		})
-	}
+		for _, input := range testCases {
+			t.Run(input, func(t *testing.T) {
+				_, err := EnsureTwoDecimalPlaces(input)
+				assert.Error(t, err)
+				assert.ErrorIs(t, err, errs.ErrInvalidAmount)
+			})
+		}
+	})
 }
