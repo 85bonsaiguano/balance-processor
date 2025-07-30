@@ -224,4 +224,3 @@ The service implements thread safety through:
 
 For more details on the transaction processing workflow, see the [transaction documentation](internal/domain/usecase/transaction/README.md). 
 
-![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/85bonsaiguano/balance-processor?utm_source=oss&utm_medium=github&utm_campaign=85bonsaiguano%2Fbalance-processor&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
